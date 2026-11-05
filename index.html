@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS100 POWER UP! | Learning Portfolio</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header class="bg-primary text-white py-4">
+    <div class="container">
+      <h1>CS100 POWER UP!</h1>
+      <p class="mb-0">Build Your Personal Learning Portfolio</p>
+    </div>
+  </header>
+
+  <main class="container py-4">
+
+    <!-- Portfolio creation -->
+    <section class="card mb-4">
+      <div class="card-body">
+        <h2 class="h4">Create Portfolio</h2>
+
+        <form id="portfolio-form">
+          <div class="mb-3">
+            <label for="portfolio-name" class="form-label">Display Name</label>
+            <input id="portfolio-name" name="name" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="portfolio-enjoy" class="form-label">What I Enjoy</label>
+            <textarea id="portfolio-enjoy" name="enjoy" class="form-control" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="portfolio-tried" class="form-label">What I've Tried</label>
+            <textarea id="portfolio-tried" name="tried" class="form-control" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="portfolio-curious" class="form-label">What I'm Curious About</label>
+            <textarea id="portfolio-curious" name="curious" class="form-control" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Create Portfolio</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Item creation -->
+    <section class="card mb-4">
+      <div class="card-body">
+        <h2 class="h4">Add Portfolio Item</h2>
+
+        <form id="item-form">
+          <div class="mb-3">
+            <label for="portfolio-select" class="form-label">Select Portfolio</label>
+            <select id="portfolio-select" name="portfolioId" class="form-select" required>
+              <option value="">Choose a portfolio</option>
+            </select>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="item-title" class="form-label">Title</label>
+              <input id="item-title" name="title" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label for="item-type" class="form-label">Type</label>
+              <input id="item-type" name="type" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label for="item-date" class="form-label">Date</label>
+              <input id="item-date" name="date" type="date" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label for="item-role" class="form-label">Role</label>
+              <input id="item-role" name="role" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <label for="item-description" class="form-label">Description</label>
+            <textarea id="item-description" name="description" class="form-control" required></textarea>
+          </div>
+
+          <div class="mt-3">
+            <label for="item-skills" class="form-label">Skills (comma separated)</label>
+            <input id="item-skills" name="skills" class="form-control" placeholder="HTML, CSS, JavaScript" required>
+          </div>
+
+          <h3 class="h5 mt-4">Reflection</h3>
+
+          <div class="mb-3">
+            <label for="reflection-did" class="form-label">What I Did</label>
+            <textarea id="reflection-did" name="whatIDid" class="form-control" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="reflection-learned" class="form-label">What I Learned</label>
+            <textarea id="reflection-learned" name="whatILearned" class="form-control" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="reflection-challenge" class="form-label">Challenge</label>
+            <textarea id="reflection-challenge" name="challenge" class="form-control" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="reflection-next" class="form-label">Next Step</label>
+            <textarea id="reflection-next" name="nextStep" class="form-control" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="item-evidence" class="form-label">Evidence URLs (one per line)</label>
+            <textarea id="item-evidence" name="evidence" class="form-control" placeholder="https://example.com/work" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-success">Add Item</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Saved portfolios -->
+    <section class="mb-4">
+      <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Saved Portfolios</h2>
+        <button id="load-samples" type="button" class="btn btn-outline-primary">
+          Load Sample Portfolios (2 × 2)
+        </button>
+      </div>
+
+      <div id="status-message" role="status" aria-live="polite"></div>
+      <div id="portfolio-list" class="row g-3"></div>
+    </section>
+
+  </main>
+
+  <footer class="bg-light text-center py-3">
+    <p class="mb-0">CS100 POWER UP! — Group Project</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="js/samples.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
