@@ -1,0 +1,51 @@
+{
+  "id": "p-sample-1",
+  "name": "Nok (Demo)",
+  "enjoy": "Designing websites",
+  "tried": "Built a website and a club poster",
+  "curious": "Browser storage",
+  "items": [
+    {
+      "id": "item001",
+      "title": "My First Website",
+      "type": "Course Assignment",
+      "date": "2026-10-18",
+      "role": "Developer",
+      "description": "Created a personal website with HTML and CSS",
+      "skills": [
+        "HTML",
+        "CSS"
+      ],
+      "reflection": {
+        "whatIDid": "Built the website",
+        "whatILearned": "Responsive design",
+        "challenge": "Mobile layout",
+        "nextStep": "Improve the design"
+      },
+      "evidence": [
+        "https://example.com/my-first-website"
+      ]
+    },
+    {
+      "id": "item002",
+      "title": "Club Poster",
+      "type": "Club Activity",
+      "date": "2026-09-12",
+      "role": "Designer",
+      "description": "Designed a poster for a club event",
+      "skills": [
+        "Canva",
+        "Typography"
+      ],
+      "reflection": {
+        "whatIDid": "Created three layouts",
+        "whatILearned": "Contrast and spacing",
+        "challenge": "Fitting event details",
+        "nextStep": "Try grid layouts"
+      },
+      "evidence": [
+        "https://example.com/club-poster"
+      ]
+    }
+  ]
+}

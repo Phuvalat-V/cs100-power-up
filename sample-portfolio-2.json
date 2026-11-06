@@ -1,0 +1,51 @@
+{
+  "id": "p-sample-2",
+  "name": "Mint (Demo)",
+  "enjoy": "Programming and photography",
+  "tried": "Made a calculator and photo story",
+  "curious": "Building interactive apps",
+  "items": [
+    {
+      "id": "item003",
+      "title": "JavaScript Calculator",
+      "type": "Course Assignment",
+      "date": "2026-10-20",
+      "role": "Developer",
+      "description": "Built a simple calculator",
+      "skills": [
+        "JavaScript",
+        "HTML"
+      ],
+      "reflection": {
+        "whatIDid": "Implemented calculations",
+        "whatILearned": "DOM events",
+        "challenge": "Handling invalid inputs",
+        "nextStep": "Add keyboard support"
+      },
+      "evidence": [
+        "https://example.com/calculator"
+      ]
+    },
+    {
+      "id": "item004",
+      "title": "Photo Story",
+      "type": "Personal Project",
+      "date": "2026-10-22",
+      "role": "Photographer",
+      "description": "Created a themed photo series",
+      "skills": [
+        "Photography",
+        "Editing"
+      ],
+      "reflection": {
+        "whatIDid": "Selected and edited photographs",
+        "whatILearned": "Visual storytelling",
+        "challenge": "Consistent lighting",
+        "nextStep": "Build an online gallery"
+      },
+      "evidence": [
+        "https://example.com/photo-story"
+      ]
+    }
+  ]
+}
