@@ -4,7 +4,24 @@ function validatePortfolioItem(data) {
     if (typeof data[field] !== 'string' || !data[field].trim()) return `Please enter ${field}.`;
   }
   const date = data.date;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) || new Date(date + 'T00:00:00').toISOString().slice(0,10) !== date) return 'Please enter a valid date.';
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+
+if (!match) return 'Please enter a valid date.';
+
+const year = Number(match[1]);
+const month = Number(match[2]);
+const day = Number(match[3]);
+
+const parsed = new Date(0);
+parsed.setFullYear(year, month - 1, day);
+
+if (
+  parsed.getFullYear() !== year ||
+  parsed.getMonth() !== month - 1 ||
+  parsed.getDate() !== day
+) {
+  return 'Please enter a valid date.';
+}
   if (!Array.isArray(data.skills) || !data.skills.length) return 'Please enter at least one skill.';
   for (const key of ['whatIDid','whatILearned','challenge','nextStep']) {
     if (!data.reflection || typeof data.reflection[key] !== 'string' || !data.reflection[key].trim()) return `Please complete reflection: ${key}.`;
