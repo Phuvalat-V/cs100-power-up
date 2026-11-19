@@ -3,6 +3,17 @@ const hostOutput = document.getElementById('host-output');
 const hostJSON = document.getElementById('host-json');
 const hostStatus = document.getElementById('host-status');
 
+const gameResult = new URLSearchParams(window.location.search);
+const gameTitles = new Map([
+  ['spot', 'ตาไว! — จับผิดภาพ'],
+  ['color', 'ตาไว! — ทายสีตัวอักษร']
+]);
+const gameTitle = gameTitles.get(gameResult.get('game'));
+if (gameTitle) {
+  hostForm.elements.title.value = gameTitle;
+  hostForm.elements.result.value = (gameResult.get('result') || '').slice(0, 500);
+}
+
 hostForm.addEventListener('input', () => {
   hostOutput.hidden = true;
   hostStatus.textContent = '';

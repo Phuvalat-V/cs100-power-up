@@ -12,6 +12,12 @@ const assets = {
   '/': ['index.html', 'text/html'],
   '/index.html': ['index.html', 'text/html'],
   '/css/style.css': ['css/style.css', 'text/css'],
+  '/challenge/': ['challenge/index.html', 'text/html'],
+  '/challenge/style.css': ['challenge/style.css', 'text/css'],
+  '/challenge/game.js': ['challenge/game.js', 'text/javascript'],
+  '/challenge/scene.js': ['challenge/scene.js', 'text/javascript'],
+  '/challenge/fonts/thai-regular.ttf': ['challenge/fonts/thai-regular.ttf', 'font/ttf'],
+  '/challenge/fonts/thai-bold.ttf': ['challenge/fonts/thai-bold.ttf', 'font/ttf'],
 };
 for (const name of ['samples', 'validation', 'app', 'show-items', 'add-item', 'exchange']) {
   assets['/js/' + name + '.js'] = ['js/' + name + '.js', 'text/javascript'];
@@ -91,11 +97,16 @@ http.createServer(async (req, res) => {
   const pathname = req.url.split('?')[0];
 
   try {
+    if (pathname === '/challenge' && req.method === 'GET') {
+      res.writeHead(308, { Location: '/challenge/' });
+      return res.end();
+    }
+
     const asset = Object.hasOwn(assets, pathname) && assets[pathname];
     if (asset && req.method === 'GET') {
       const [file, type] = asset;
       const content = fs.readFileSync(path.join(__dirname, file));
-      res.writeHead(200, { 'Content-Type': type + '; charset=utf-8' });
+      res.writeHead(200, { 'Content-Type': type.startsWith('text/') ? type + '; charset=utf-8' : type });
       return res.end(content);
     }
 
