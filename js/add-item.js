@@ -1,21 +1,19 @@
-// Issue #1 - Add portfolio item to the selected portfolio.
-// Depends on globals `portfolios`, `savePortfolios`, `renderPortfolios` from app.js.
 function refreshPortfolioOptions() {
-  const select = document.getElementById('portfolio-select');
+  for (const id of ['portfolio-select', 'import-portfolio']) {
+    fillPortfolioSelect(document.getElementById(id));
+  }
+}
+
+function fillPortfolioSelect(select) {
   const selected = select.value;
   select.replaceChildren(new Option('Choose a portfolio', ''));
   portfolios.forEach(p => select.add(new Option(p.name, p.id)));
   if (portfolios.some(p => p.id === selected)) select.value = selected;
 }
-function showItemMessage(message, isError = false) {
-  const area = document.getElementById('status-message');
-  area.className = `alert ${isError ? 'alert-danger' : 'alert-success'}`;
-  area.textContent = message;
-}
 function readItemForm(form) {
   const d = new FormData(form);
   return {
-    id: crypto.randomUUID(), title: String(d.get('title') || '').trim(),
+    id: newId(), title: String(d.get('title') || '').trim(),
     type: String(d.get('type') || '').trim(), date: String(d.get('date') || '').trim(),
     role: String(d.get('role') || '').trim(), description: String(d.get('description') || '').trim(),
     skills: String(d.get('skills') || '').split(',').map(x => x.trim()).filter(Boolean),
@@ -28,24 +26,27 @@ function readItemForm(form) {
     evidence: String(d.get('evidence') || '').split(/\r?\n/).map(x => x.trim()).filter(Boolean)
   };
 }
+
 const itemForm = document.getElementById('item-form');
 itemForm.addEventListener('submit', event => {
   event.preventDefault();
-  const selectedId = document.getElementById('portfolio-select').value;
-  const portfolio = portfolios.find(p => p.id === selectedId);
-  if (!portfolio) return showItemMessage('Please select a portfolio.', true);
-  const item = readItemForm(itemForm);
-  const error = typeof validatePortfolioItem === 'function' ? validatePortfolioItem(item) : null;
-  if (error) return showItemMessage(error, true);
-  portfolio.items.push(item);
-  try { savePortfolios(); }
-  catch { portfolio.items.pop(); return showItemMessage('Unable to save in this browser.', true); }
-  renderPortfolios();
-  itemForm.reset();
-  refreshPortfolioOptions();
-  document.getElementById('portfolio-select').value = selectedId;
-  showItemMessage(`Saved item "${item.title}" to ${portfolio.name}.`);
+  const status = document.getElementById('item-status');
+  submitAction(event.submitter, status, async () => {
+    const select = document.getElementById('portfolio-select');
+    const selectedId = select.value;
+    const item = readItemForm(itemForm);
+    const error = validatePortfolioItem(item);
+    if (error) throw new Error(error);
+    const portfolio = await saveItem(selectedId, item);
+    itemForm.reset();
+    select.value = selectedId;
+    showStatus(status, 'Saved "' + item.title + '" to ' + portfolio.name + '.');
+  });
 });
-refreshPortfolioOptions();
-// Update dropdown after the existing Create Portfolio handler completes.
-portfolioForm.addEventListener('submit', () => queueMicrotask(refreshPortfolioOptions));
+
+async function saveItem(portfolioId, item) {
+  if (!portfolioId) throw new Error('Please select the destination portfolio.');
+  const portfolio = await requestPortfolio('/' + encodeURIComponent(portfolioId) + '/items', item);
+  updatePortfolio(portfolio);
+  return portfolio;
+}

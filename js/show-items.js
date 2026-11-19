@@ -21,6 +21,10 @@ function renderPortfolios() {
       element('p','',`Enjoy: ${p.enjoy}`), element('p','',`Tried: ${p.tried}`),
       element('p','',`Curious: ${p.curious}`),
       element('p','text-muted',`Learning Items: ${(p.items || []).length}`));
+    const exportButton = element('button', 'btn btn-outline-primary', 'Export this portfolio');
+    exportButton.type = 'button';
+    exportButton.addEventListener('click', () => exportPortfolio(p.id, exportButton));
+    body.append(exportButton);
     (p.items || []).forEach(item => {
       const section = element('section','portfolio-item');
       section.append(element('h4','h6',item.title),
