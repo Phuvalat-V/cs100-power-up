@@ -13,7 +13,7 @@ const assets = {
   '/index.html': ['index.html', 'text/html'],
   '/css/style.css': ['css/style.css', 'text/css'],
 };
-for (const name of ['samples', 'validation', 'app', 'show-items', 'add-item']) {
+for (const name of ['samples', 'validation', 'app', 'show-items', 'add-item', 'exchange']) {
   assets['/js/' + name + '.js'] = ['js/' + name + '.js', 'text/javascript'];
 }
 
