@@ -9,21 +9,21 @@ const backgroundCanvases = canvases.map(() => {
   return canvas;
 });
 const buttons = { spot: $("tab-spot"), color: $("tab-color") };
-const colorQuestionsCount = 10;
-const colors = [
-  { name: "สีแดง", sample: "#c53b44" },
-  { name: "สีฟ้า", sample: "#278cbd" },
-  { name: "สีเขียว", sample: "#278254" },
-  { name: "สีเหลือง", sample: "#e3ab16" },
-  { name: "สีม่วง", sample: "#7948b2" },
-  { name: "สีส้ม", sample: "#d96426" },
-  { name: "สีชมพู", sample: "#d94689" },
-  { name: "สีน้ำเงิน", sample: "#2f4dab" },
-  { name: "สีน้ำตาล", sample: "#835537" },
-  { name: "สีเทา", sample: "#6e7180" },
-  { name: "สีดำ", sample: "#202328" },
-  { name: "สีเขียวอมฟ้า", sample: "#18817e" },
+const colorNames = {
+  yellow: "สีเหลือง", red: "สีแดง", green: "สีเขียว", blue: "สีน้ำเงิน",
+  orange: "สีส้ม", pink: "สีชมพู", purple: "สีม่วง", black: "สีดำ",
+};
+const logos = [
+  { id: "mcd", brand: "McDonald’s", part: "ซุ้มรูปตัว M", answer: "yellow", ink: "#ffc72c" },
+  { id: "walmart", brand: "Walmart", part: "เครื่องหมายแฉก", answer: "yellow", ink: "#ffc220" },
+  { id: "youtube", brand: "YouTube", part: "พื้นหลังของปุ่มเล่น", answer: "red", ink: "#ff0033" },
+  { id: "spotify", brand: "Spotify", part: "วงกลมของโลโก้แบบสี", answer: "green", ink: "#1ed760" },
+  { id: "netflix", brand: "Netflix", part: "ตัว N", answer: "red", ink: "#e50914" },
+  { id: "facebook", brand: "Facebook", part: "วงกลมรอบตัว f", answer: "blue", ink: "#0866ff" },
+  { id: "line", brand: "LINE", part: "พื้นหลังรอบกล่องข้อความ", answer: "green", ink: "#06c755" },
+  { id: "ikea", brand: "IKEA", part: "วงรีด้านหลังชื่อ IKEA", answer: "yellow", ink: "#ffda1a" },
 ];
+const colorQuestionsCount = logos.length;
 
 function shuffle(values) {
   const shuffled = [...values];
@@ -39,9 +39,9 @@ function freshGame(mode) {
   if (mode === "spot") {
     game.rounds = scenes.map(() => ({ found: [], misses: 0, hints: [], cursor: null, miss: null }));
   } else {
-    game.questions = shuffle(colors).slice(0, colorQuestionsCount).map((answer, index) => {
-      const distractors = shuffle(colors.filter((color) => color !== answer)).slice(0, 3);
-      return { answer, options: shuffle([answer, ...distractors]), word: index >= 5 ? distractors[0].name : "", selected: null };
+    game.questions = shuffle(logos).map((logo) => {
+      const distractors = shuffle(Object.keys(colorNames).filter((color) => color !== logo.answer)).slice(0, 3);
+      return { ...logo, options: shuffle([logo.answer, ...distractors]), selected: null };
     });
   }
   return game;
@@ -183,18 +183,29 @@ function paintSpot() {
 function paintColors() {
   const game = activeGame();
   const question = game.questions[game.round];
-  $("color-stage").style.setProperty("--sample", question.answer.sample);
-  $("swatch").hidden = Boolean(question.word);
-  $("swatch-word").hidden = !question.word;
-  $("swatch-word").textContent = question.word;
-  $("color-instruction").textContent = question.word
-    ? "ตัวอักษรเป็นสีอะไร? ให้ดูสีหมึกที่ใช้เขียน"
-    : "แผ่นสีตรงกลางเป็นสีอะไร?";
+  $("color-instruction").textContent = "ในโลโก้ " + question.brand + " " + question.part + " เป็นสีอะไร?";
+  const mark = $("logo-mark");
+  mark.dataset.logo = question.id;
+  mark.dataset.revealed = String(question.selected !== null);
+  mark.style.setProperty("--logo-ink", question.ink);
+  mark.replaceChildren();
+  const characters = { netflix: "N", facebook: "f", line: "LINE", ikea: "IKEA" };
+  if (question.id === "walmart") {
+    for (let angle = 0; angle < 360; angle += 60) {
+      const ray = document.createElement("span");
+      ray.style.setProperty("--angle", angle + "deg");
+      mark.append(ray);
+    }
+  } else if (question.id === "spotify") {
+    mark.append(document.createElement("span"), document.createElement("span"), document.createElement("span"));
+  } else {
+    mark.textContent = characters[question.id] ?? "";
+  }
   const choices = question.options.map((option) => {
     const button = document.createElement("button");
     button.className = "button";
     button.type = "button";
-    button.textContent = option.name;
+    button.textContent = colorNames[option];
     button.disabled = Boolean(question.selected);
     if (question.selected && option === question.answer) button.dataset.result = "correct";
     if (question.selected === option && option !== question.answer) button.dataset.result = "wrong";
@@ -218,7 +229,7 @@ function updateNext() {
 }
 
 function gameName(kind) {
-  return kind === "spot" ? "จับผิดภาพ" : "ทายสี";
+  return kind === "spot" ? "จับผิดภาพ" : "จำสีโลโก้";
 }
 
 function summary(kind, game) {
@@ -246,7 +257,7 @@ function renderGame() {
     : "ข้อ " + (game.round + 1) + " / " + colorQuestionsCount;
   $("game-title").textContent = game.done ? "สรุปคะแนน" : isSpot
     ? scenes[game.round].name
-    : game.questions[game.round].word ? "ทายสีตัวอักษร" : "ทายสีที่เห็น";
+    : game.questions[game.round].brand;
   if (game.done) {
     $("result-summary").textContent = summary(mode, game);
     const params = new URLSearchParams({ game: mode, result: summary(mode, game) });
@@ -314,7 +325,7 @@ function answerColor(option) {
   question.selected = option;
   pauseTimer(game);
   const correct = option === question.answer;
-  setFeedback(correct ? "ถูกต้อง! คำตอบคือ" + option.name : "คำตอบคือ" + question.answer.name, correct ? "good" : "bad");
+  setFeedback(correct ? "ถูกต้อง! คำตอบคือ" + colorNames[option] : "คำตอบคือ" + colorNames[question.answer], correct ? "good" : "bad");
   paintColors();
   progress();
   updateNext();

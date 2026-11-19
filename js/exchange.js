@@ -6,7 +6,7 @@ const hostStatus = document.getElementById('host-status');
 const gameResult = new URLSearchParams(window.location.search);
 const gameTitles = new Map([
   ['spot', 'ตาไว! — จับผิดภาพ'],
-  ['color', 'ตาไว! — ทายสีตัวอักษร']
+  ['color', 'ตาไว! — จำสีโลโก้']
 ]);
 const gameTitle = gameTitles.get(gameResult.get('game'));
 if (gameTitle) {

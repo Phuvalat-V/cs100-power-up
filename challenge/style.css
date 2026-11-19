@@ -271,20 +271,110 @@ p, h1, h2, h3, figure { margin: 0; }
   background-size: 13px 13px;
   border: 1px solid #e2d8ef; border-radius: 12px;
 }
-.swatch {
-  width: min(57%, 260px); height: 112px;
-  border: 2px solid var(--ink); border-radius: 14px; background: var(--sample, var(--purple));
-  box-shadow: 4px 5px 0 var(--ink);
+.logo-mark {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 112px;
+  height: 112px;
+  color: #222631;
+  font: 800 4.8rem/1 system-ui, sans-serif;
 }
-.swatch-word {
-  color: var(--sample, var(--purple));
-  font-size: clamp(2.4rem, 7vw, 5.5rem);
-  line-height: 1;
-  font-weight: 850;
+.logo-mark[data-revealed="true"] { color: var(--logo-ink); }
+.logo-mark[data-logo="mcd"]::before,
+.logo-mark[data-logo="mcd"]::after {
+  content: "";
+  position: absolute;
+  bottom: 10px;
+  width: 54px;
+  height: 90px;
+  border: 11px solid currentColor;
+  border-bottom: 0;
+  border-radius: 100% 100% 0 0;
+}
+.logo-mark[data-logo="mcd"]::before { left: 4px; }
+.logo-mark[data-logo="mcd"]::after { right: 4px; }
+.logo-mark[data-logo="walmart"] span {
+  position: absolute;
+  top: 2px;
+  left: calc(50% - 6px);
+  width: 12px;
+  height: 33px;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: 50% 54px;
+  transform: rotate(var(--angle));
+}
+.logo-mark[data-logo="youtube"],
+.logo-mark[data-logo="spotify"],
+.logo-mark[data-logo="facebook"],
+.logo-mark[data-logo="line"] { background: currentColor; }
+.logo-mark[data-logo="youtube"] {
+  width: 124px;
+  height: 82px;
+  border-radius: 23px;
+}
+.logo-mark[data-logo="youtube"]::after {
+  content: "";
+  border-block: 16px solid transparent;
+  border-left: 28px solid #fff;
+  margin-left: 5px;
+}
+.logo-mark[data-logo="spotify"],
+.logo-mark[data-logo="facebook"] { border-radius: 50%; }
+.logo-mark[data-logo="spotify"] { align-content: center; gap: 2px; }
+.logo-mark[data-logo="spotify"] span {
+  width: 67px;
+  height: 19px;
+  border-top: 7px solid #fff;
+  border-radius: 55%;
+  transform: rotate(9deg);
+}
+.logo-mark[data-logo="spotify"] span:nth-child(2) { width: 55px; }
+.logo-mark[data-logo="spotify"] span:nth-child(3) { width: 42px; }
+.logo-mark[data-logo="facebook"] {
+  color: #fff;
+  background: #222631;
+  overflow: hidden;
+  align-items: end;
+  font-size: 6rem;
+  line-height: .87;
+}
+.logo-mark[data-logo="facebook"][data-revealed="true"],
+.logo-mark[data-logo="line"][data-revealed="true"] { background: var(--logo-ink); }
+.logo-mark[data-logo="line"] {
+  border-radius: 24px;
+  isolation: isolate;
+  background: #222631;
+  color: #222631;
+  font-size: 1.15rem;
+}
+.logo-mark[data-logo="line"][data-revealed="true"] { color: #18402f; }
+.logo-mark[data-logo="line"]::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 27px 15px;
   background: #fff;
-  padding: 14px 25px;
-  border: 1px solid #e2d8ef; border-radius: 13px;
+  border-radius: 50%;
 }
+.logo-mark[data-logo="line"]::after {
+  content: "";
+  position: absolute;
+  top: 72px;
+  left: 56px;
+  border: 10px solid transparent;
+  border-top-color: #fff;
+  border-left-color: #fff;
+}
+.logo-mark[data-logo="ikea"] {
+  width: 154px;
+  height: 79px;
+  border-radius: 50%;
+  background: #d8dbe1;
+  font-size: 2.55rem;
+}
+.logo-mark[data-logo="ikea"][data-revealed="true"] { color: #0058a3; background: var(--logo-ink); }
 .choices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
 .choices .button { padding-inline: 6px; min-height: 47px; border-color: #cfc2e0; }
 .choices .button:not(:disabled):hover { background: var(--lavender); border-color: var(--purple); }

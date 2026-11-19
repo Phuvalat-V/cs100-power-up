@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f2f5fb">
-  <meta name="description" content="เกมฝึกสังเกตสำหรับ CS100 Final Demo จับผิดภาพ ทายสี สำหรับบูธ CS100 POWER UP">
+  <meta name="description" content="เกมฝึกสังเกตสำหรับ CS100 Final Demo จับผิดภาพและจำสีโลโก้ สำหรับบูธ CS100 POWER UP">
   <title>ตาไว! — ห้องเกมฝึกสายตา</title>
   <link rel="stylesheet" href="style.css">
   <script src="scene.js" defer></script>
@@ -40,7 +40,7 @@
       <div class="hero-doodle hero-doodle-left" aria-hidden="true"><span></span><i></i><b></b></div>
       <p class="course">CS100 <span></span> FINAL DEMO</p>
       <h1 id="heading">ตาไว<span>!</span></h1>
-      <p class="hero-subtitle">จับความต่าง ทายสี แล้วมาแข่งกันว่าใครตาไวกว่า</p>
+      <p class="hero-subtitle">จับความต่าง จำสีโลโก้ แล้วมาแข่งกันว่าใครตาไวกว่า</p>
       <div class="hero-doodle hero-doodle-right" aria-hidden="true"><span></span><i></i><b></b></div>
     </section>
 
@@ -52,7 +52,7 @@
       </button>
       <button class="game-tab color-tab" id="tab-color" type="button" aria-pressed="false">
         <span class="tab-icon"><svg class="icon"><use href="#i-palette"/></svg></span>
-        <span class="tab-copy"><strong>ทายสี</strong><small>เลือกคำตอบให้ตรงกับสีที่เห็น</small></span>
+        <span class="tab-copy"><strong>จำสีโลโก้</strong><small>ทายสีจริงจากโลโก้ขาวดำ</small></span>
         <span class="tab-indicator" aria-hidden="true"></span>
       </button>
     </div>
@@ -84,7 +84,7 @@
         <div id="color-play" hidden>
           <p class="instruction" id="color-instruction"></p>
           <div class="color-stage" id="color-stage" aria-hidden="true">
-            <span id="swatch" class="swatch"></span><span class="swatch-word" id="swatch-word" hidden></span>
+            <span id="logo-mark" class="logo-mark"></span>
           </div>
           <div class="choices" id="choices" aria-label="ตัวเลือกสี"></div>
         </div>
