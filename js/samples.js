@@ -103,20 +103,16 @@ const SAMPLE_PORTFOLIOS = [
   }
 ];
 
-// Issue #3 - Load sample portfolios. No fetch required: works via file:// too.
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('load-samples').addEventListener('click', () => {
-    const ids = new Set(portfolios.map(p => p.id));
-    let added = 0;
-    SAMPLE_PORTFOLIOS.forEach(p => {
-      if (!ids.has(p.id)) { portfolios.push(JSON.parse(JSON.stringify(p))); added++; }
-    });
-    try { savePortfolios(); }
-    catch { alert('Could not save samples in this browser.'); return; }
-    renderPortfolios();
-    if (typeof refreshPortfolioOptions === 'function') refreshPortfolioOptions();
-    const status = document.getElementById('status-message');
-    status.className = 'alert alert-info';
-    status.textContent = added ? `Loaded ${added} demo portfolio(s).` : 'Demo portfolios already loaded.';
+const samplesButton = document.getElementById('load-samples');
+samplesButton.addEventListener('click', () => {
+  const status = document.getElementById('status-message');
+  submitAction(samplesButton, status, async () => {
+    await reloadPortfolios();
+    for (const sample of SAMPLE_PORTFOLIOS) {
+      if (!portfolios.some(portfolio => portfolio.id === sample.id)) {
+        updatePortfolio(await requestPortfolio('', sample));
+      }
+    }
+    showStatus(status, 'Demo portfolios are ready.');
   });
 });

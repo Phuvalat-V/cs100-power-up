@@ -1,1 +1,6 @@
 /portfolios.json
+/.portfolios-*.tmp
+/data/
+.env
+*.pem
+*.key

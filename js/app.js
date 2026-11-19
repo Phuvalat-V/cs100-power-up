@@ -1,55 +1,77 @@
-const STORAGE_KEY = "cs100-portfolios";
+let portfolios = [];
 
-let portfolios = JSON.parse(
-  localStorage.getItem(STORAGE_KEY) || "[]"
-);
-
-function savePortfolios() {
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(portfolios)
-  );
+function newId() {
+  // getRandomValues works on the public HTTP address of the EC2 demo.
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)),
+    byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-function createPortfolio(name, enjoy, tried, curious) {
-  const portfolio = {
-    id: crypto.randomUUID(),
-    name: name,
-    enjoy: enjoy,
-    tried: tried,
-    curious: curious,
-    items: []
+async function requestPortfolio(path = '', body) {
+  const options = body === undefined ? {} : {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
   };
-
-  portfolios.push(portfolio);
-  savePortfolios();
-
-  return portfolio;
+  const response = await fetch('/api/portfolios' + path, options);
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error);
+  return result;
 }
 
-const portfolioForm = document.getElementById("portfolio-form");
+async function reloadPortfolios() {
+  portfolios = await requestPortfolio();
+  renderPortfolios();
+  refreshPortfolioOptions();
+}
 
-portfolioForm.addEventListener("submit", function (event) {
-  event.preventDefault();
+function showStatus(area, message, isError = false) {
+  area.className = 'alert ' + (isError ? 'alert-danger' : 'alert-success');
+  area.textContent = message;
+}
 
-  const name = document.getElementById("portfolio-name").value.trim();
-  const enjoy = document.getElementById("portfolio-enjoy").value.trim();
-  const tried = document.getElementById("portfolio-tried").value.trim();
-  const curious = document.getElementById("portfolio-curious").value.trim();
-
-  if (!name || !enjoy || !tried || !curious) {
-    alert("Please fill in all fields.");
-    return;
+async function submitAction(button, area, action) {
+  button.disabled = true;
+  try {
+    await action();
+  } catch (error) {
+    showStatus(area, error.message, true);
+  } finally {
+    button.disabled = false;
   }
+}
 
-  const newPortfolio = createPortfolio(name, enjoy, tried, curious);
+function updatePortfolio(portfolio) {
+  portfolios = portfolios.filter(entry => entry.id !== portfolio.id);
+  portfolios.push(portfolio);
+  renderPortfolios();
+  refreshPortfolioOptions();
+}
 
-    renderPortfolios();
-
-  console.log("Portfolio created:", newPortfolio);
-  alert("Portfolio created successfully!");
-
-  portfolioForm.reset();
+const portfolioForm = document.getElementById('portfolio-form');
+portfolioForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const status = document.getElementById('create-status');
+  submitAction(event.submitter, status, async () => {
+    const data = new FormData(portfolioForm);
+    const portfolio = { id: newId(), items: [] };
+    for (const key of ['name', 'enjoy', 'tried', 'curious']) {
+      portfolio[key] = data.get(key).trim();
+    }
+    const saved = await requestPortfolio('', portfolio);
+    updatePortfolio(saved);
+    document.getElementById('portfolio-select').value = saved.id;
+    portfolioForm.reset();
+    showStatus(status, 'Saved ' + saved.name + ' to the server.');
+  });
 });
 
-const portfolioList = document.getElementById("portfolio-list");
+document.addEventListener('DOMContentLoaded', () => {
+  const button = document.getElementById('reload-portfolios');
+  const status = document.getElementById('status-message');
+  const reload = () => submitAction(button, status, async () => {
+    await reloadPortfolios();
+    showStatus(status, 'Portfolios loaded from the server.');
+  });
+  button.addEventListener('click', reload);
+  reload();
+});
