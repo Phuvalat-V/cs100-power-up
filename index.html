@@ -178,34 +178,59 @@
         </form>
       </div>
     </section>
-<section class="card mb-4" id="challenge-booth" lang="th">
+    <section class="card mb-4" id="challenge-booth" lang="th">
       <div class="card-body">
-        <h2 class="h4">สร้าง Item JSON สำหรับผู้เล่น</h2>
-        <p>หลังผู้เล่นทำ Challenge สำเร็จ ให้ Host กรอกผลและลิงก์หลักฐาน แล้วคัดลอก JSON ส่งให้ผู้เล่น</p>
+        <h2 class="h4">ตาไว! — สร้าง Item JSON</h2>
+        <p>ให้ผู้เล่นเลือกเกม แล้วใช้ผลจากหน้าสรุปมากรอกในฟอร์ม</p>
+
+        <a class="btn btn-outline-primary mb-3"
+           href="https://color-spot.axialbeech32.chatgpt.site/"
+           target="_blank" rel="noopener noreferrer">
+          เปิดเกมตาไว!
+        </a>
+
         <form id="host-form" class="vstack gap-2">
-          <label for="host-title">ชื่อ Challenge</label>
-          <input class="form-control" id="host-title" name="title" required>
+          <label for="host-title">เกมที่เล่น</label>
+          <select class="form-select" id="host-title" name="title" required>
+            <option value="">เลือกเกม</option>
+            <option value="ตาไว! — จับผิดภาพ">จับผิดภาพ</option>
+            <option value="ตาไว! — ทายสีตัวอักษร">ทายสีตัวอักษร</option>
+          </select>
+
           <label for="host-alias">ชื่อเล่นผู้เข้าร่วม</label>
           <input class="form-control" id="host-alias" name="alias" required>
-          <label for="host-result">สิ่งที่ผู้เข้าร่วมทำและผลที่ได้</label>
-          <textarea class="form-control" id="host-result" name="result" required></textarea>
+
+          <label for="host-result">ผลที่ได้จากหน้าสรุปเกม</label>
+          <textarea class="form-control" id="host-result" name="result"
+                    placeholder="กรอกคะแนน เวลา หรือจำนวนด่านตามที่เกมแสดง"
+                    required></textarea>
+
           <label for="host-skills">ทักษะที่ใช้ (คั่นด้วยเครื่องหมายจุลภาค)</label>
-          <input class="form-control" id="host-skills" name="skills" required>
-          <label for="host-evidence">ลิงก์หลักฐานผลงาน</label>
-          <input class="form-control" type="url" id="host-evidence" name="evidence" required>
+          <input class="form-control" id="host-skills" name="skills"
+                 value="การสังเกต, สมาธิ" required>
+
+          <label for="host-evidence">ลิงก์รูปหรือคลิปหน้าสรุปผล</label>
+          <input class="form-control" type="url" id="host-evidence"
+                 name="evidence" required>
+
           <label for="host-learned">สิ่งที่ผู้เข้าร่วมได้เรียนรู้</label>
           <textarea class="form-control" id="host-learned" name="learned" required></textarea>
+
           <label for="host-challenge">สิ่งที่ผู้เข้าร่วมพบว่ายาก</label>
           <textarea class="form-control" id="host-challenge" name="challenge" required></textarea>
+
           <label for="host-next">สิ่งที่ผู้เข้าร่วมอยากทำต่อ</label>
           <textarea class="form-control" id="host-next" name="next" required></textarea>
-          <button class="btn btn-primary align-self-start">Generate Item JSON</button>
+
+          <button type="submit" class="btn btn-primary align-self-start">Generate Item JSON</button>
         </form>
+
         <div id="host-output" class="mt-3" hidden>
           <label for="host-json" class="form-label">Portfolio Item JSON</label>
           <textarea id="host-json" class="form-control font-monospace" rows="7" readonly></textarea>
           <button id="copy-item" class="btn btn-outline-primary mt-2" type="button">Copy JSON</button>
         </div>
+
         <div id="host-status" class="mt-2" role="status"></div>
       </div>
     </section>
