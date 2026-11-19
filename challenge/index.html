@@ -57,6 +57,21 @@
       </button>
     </div>
 
+    <p class="player-line">ผู้เล่น <strong id="current-player"></strong>
+      <button class="button" id="change-player" type="button">เปลี่ยนผู้เล่น</button>
+    </p>
+    <dialog id="player-dialog" aria-labelledby="player-heading">
+      <form id="player-form">
+        <h2 id="player-heading">ใครจะเล่นรอบนี้?</h2>
+        <label for="player-name">ชื่อเล่น</label>
+        <input id="player-name" name="alias" maxlength="60" required autofocus>
+        <div class="result-actions">
+          <button class="button primary" type="submit">เริ่มเล่น</button>
+          <a class="button" href="/#challenge-booth">กลับหน้าหลัก</a>
+        </div>
+      </form>
+    </dialog>
+
     <section class="game-board" id="board" aria-label="พื้นที่เล่นเกม">
       <div class="play">
         <div class="play-head">
@@ -98,10 +113,20 @@
           <div class="result-icon"><svg class="icon"><use href="#i-trophy"/></svg></div>
           <h3 id="result-heading" tabindex="-1">เล่นครบแล้ว!</h3>
           <p id="result-summary"></p>
-          <div class="result-actions">
-            <a class="button primary" id="use-result" href="/#challenge-booth">นำผลไปกรอกในเว็บหลัก</a>
-            <button type="button" class="button" id="play-again">เล่นอีกครั้ง</button>
-          </div>
+          <form id="reflection-form">
+            <h4>เล่นแล้วได้อะไรบ้าง?</h4>
+            <label for="game-learned">สิ่งที่ได้เรียนรู้</label>
+            <textarea id="game-learned" name="learned" rows="2" maxlength="500" required></textarea>
+            <label for="game-challenge">สิ่งที่ยาก</label>
+            <textarea id="game-challenge" name="challenge" rows="2" maxlength="500" required></textarea>
+            <label for="game-next">สิ่งที่อยากทำต่อ</label>
+            <textarea id="game-next" name="next" rows="2" maxlength="500" required></textarea>
+            <p id="transfer-status" role="status"></p>
+            <div class="result-actions">
+              <button class="button primary" type="submit">ส่งผลไปหน้าหลัก</button>
+              <button type="button" class="button" id="play-again">เล่นอีกครั้ง</button>
+            </div>
+          </form>
         </div>
       </div>
 

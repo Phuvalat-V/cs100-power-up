@@ -12,6 +12,18 @@ const gameTitle = gameTitles.get(gameResult.get('game'));
 if (gameTitle) {
   hostForm.elements.title.value = gameTitle;
   hostForm.elements.result.value = (gameResult.get('result') || '').slice(0, 500);
+  const transferKey = 'cs100-game-reflection';
+  try {
+    const player = JSON.parse(sessionStorage.getItem(transferKey));
+    if (player?.game === gameResult.get('game')) {
+      sessionStorage.removeItem(transferKey);
+      for (const [field, limit] of Object.entries({ alias: 60, learned: 500, challenge: 500, next: 500 })) {
+        if (typeof player[field] === 'string') hostForm.elements[field].value = player[field].slice(0, limit);
+      }
+    }
+  } catch {
+    // The game title and score can still be filled from the link.
+  }
 }
 
 hostForm.addEventListener('input', () => {

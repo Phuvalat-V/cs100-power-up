@@ -35,7 +35,7 @@ function shuffle(values) {
 }
 
 function freshGame(mode) {
-  const game = { round: 0, elapsed: 0, startedAt: null, done: false, feedback: "", tone: "" };
+  const game = { reflection: {}, round: 0, elapsed: 0, startedAt: null, done: false, feedback: "", tone: "" };
   if (mode === "spot") {
     game.rounds = scenes.map(() => ({ found: [], misses: 0, hints: [], cursor: null, miss: null }));
   } else {
@@ -47,6 +47,7 @@ function freshGame(mode) {
   return game;
 }
 
+let player = "";
 let mode = "spot";
 let games = { spot: freshGame("spot"), color: freshGame("color") };
 let cachedScene = null;
@@ -58,7 +59,7 @@ function elapsed(game) {
 }
 
 function startTimer(game) {
-  if (game.startedAt === null && !game.done) game.startedAt = performance.now();
+  if (player && game.startedAt === null && !game.done) game.startedAt = performance.now();
 }
 
 function pauseTimer(game) {
@@ -260,8 +261,11 @@ function renderGame() {
     : game.questions[game.round].brand;
   if (game.done) {
     $("result-summary").textContent = summary(mode, game);
-    const params = new URLSearchParams({ game: mode, result: summary(mode, game) });
-    $("use-result").href = "/?" + params.toString() + "#challenge-booth";
+    for (const field of reflectionFields) {
+      field.value = game.reflection[field.name] ?? "";
+      field.setCustomValidity("");
+    }
+    $("transfer-status").textContent = "";
   } else if (isSpot) {
     paintSpot();
   } else {
@@ -411,5 +415,63 @@ $("hint").addEventListener("click", hint);
 $("restart").addEventListener("click", restart);
 $("play-again").addEventListener("click", restart);
 
+const playerDialog = $("player-dialog");
+const playerName = $("player-name");
+const reflectionForm = $("reflection-form");
+const reflectionFields = [...reflectionForm.querySelectorAll("textarea")];
+
+function requireText(field) {
+  field.setCustomValidity(field.value.trim() ? "" : "กรอกข้อความก่อนนะ");
+}
+
+playerName.addEventListener("input", () => requireText(playerName));
+playerDialog.addEventListener("cancel", (event) => {
+  if (!player) event.preventDefault();
+});
+playerDialog.addEventListener("close", () => {
+  if (!roundComplete(activeGame())) startTimer(activeGame());
+});
+$("change-player").addEventListener("click", () => {
+  pauseTimer(activeGame());
+  playerName.value = "";
+  playerName.setCustomValidity("");
+  playerDialog.showModal();
+});
+$("player-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  requireText(playerName);
+  if (!playerName.reportValidity()) return;
+  player = playerName.value.trim();
+  $("current-player").textContent = player;
+  games = { spot: freshGame("spot"), color: freshGame("color") };
+  playerDialog.close();
+  startTimer(activeGame());
+  renderGame();
+  buttons[mode].focus({ preventScroll: true });
+});
+for (const field of reflectionFields) {
+  field.addEventListener("input", () => {
+    activeGame().reflection[field.name] = field.value;
+    requireText(field);
+  });
+}
+
+reflectionForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  for (const field of reflectionFields) requireText(field);
+  if (!reflectionForm.reportValidity()) return;
+  const game = activeGame();
+  const reflection = Object.fromEntries(reflectionFields.map((field) => [field.name, field.value.trim()]));
+  try {
+    sessionStorage.setItem("cs100-game-reflection", JSON.stringify({ game: mode, alias: player, ...reflection }));
+  } catch {
+    $("transfer-status").textContent = "ส่งผลไม่ได้ ลองเปิดเว็บในแท็บปกติแล้วกดส่งอีกครั้ง";
+    return;
+  }
+  const params = new URLSearchParams({ game: mode, result: summary(mode, game) });
+  window.location.assign("/?" + params.toString() + "#challenge-booth");
+});
+
 renderGame();
+playerDialog.showModal();
 setInterval(updateTimer, 250);

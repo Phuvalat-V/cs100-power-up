@@ -446,3 +446,45 @@ p, h1, h2, h3, figure { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
 }
+
+.player-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+#player-dialog {
+  width: min(calc(100% - 32px), 420px);
+  padding: 24px;
+  border: 1px solid var(--ink);
+  border-radius: 16px;
+  color: var(--ink);
+}
+
+#player-dialog::backdrop { background: rgb(22 35 55 / 55%); }
+
+#player-form,
+#reflection-form {
+  display: grid;
+  gap: 8px;
+}
+
+#reflection-form {
+  width: min(100%, 480px);
+  margin: 16px auto 0;
+  text-align: left;
+}
+
+#player-form input,
+#reflection-form textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #a9bad1;
+  border-radius: 8px;
+  font: inherit;
+}
+
+#reflection-form textarea { resize: vertical; }
+#transfer-status:empty { display: none; }
