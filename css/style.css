@@ -134,3 +134,16 @@ footer {
     max-width: 100%;
   }
 }
+
+@media (max-width: 576px) {
+  .portfolio-nav .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 4px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    display: grid;
+    place-items: center;
+  }
+}
