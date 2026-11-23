@@ -12,6 +12,17 @@
 ข้อมูลที่เซฟจะอยู่ใน `portfolios.json` บนเครื่องที่รัน Server
 เว็บเดโมไม่มีระบบล็อกอิน ใช้ชื่อเล่นและข้อมูลสมมติเท่านั้น
 
+## เปิดเว็บผ่านเซิร์ฟเวอร์ EC2
+
+1. เปิด Learner Lab และเริ่ม EC2 Instance ที่ใช้รันโปรเจกต์
+2. เมื่อเซิร์ฟเวอร์ทำงานแล้ว ให้คัดลอก **Public IPv4 address** ล่าสุดจากหน้า EC2 Instances
+3. เปิด `http://PUBLIC_IP:3000/` ในเบราว์เซอร์ โดยแทน `PUBLIC_IP` ด้วย IP ที่คัดลอกมา
+4. เข้าเกมจาก **Host Challenge → เปิดเกมตาไว!** หรือเปิด `http://PUBLIC_IP:3000/challenge/` โดยตรง
+
+ถ้ารันเซิร์ฟเวอร์เองจาก Terminal บน EC2 ให้รัน `HOST=0.0.0.0 PORT=3000 node server.js`
+จากโฟลเดอร์โปรเจกต์ และให้ Security Group อนุญาต TCP พอร์ต 3000 จากเครือข่ายของผู้เล่น
+หลัง Stop/Start เครื่อง ให้เช็ก Public IPv4 อีกครั้งก่อนแชร์ลิงก์
+
 ## ใช้ที่บูธยังไง
 
 1. ที่หน้าเว็บหลัก กด **Host Challenge → เปิดเกมตาไว!** แล้วกรอกชื่อเล่น
@@ -21,36 +32,3 @@
 4. คนรับเอา Item JSON ไปวางในหน้า **Import Item** ของเว็บกลุ่มตัวเอง เลือก Portfolio
    ตรวจลิงก์ แก้ Reflection ตามที่ทำจริง แล้วกด **Save Imported Item**
 5. ที่ **My Portfolio** กด Export บนการ์ดของตัวเอง จะได้ `my-portfolio.json` ไว้ส่งอาจารย์
-
-## อัปเดตเว็บบน EC2 ที่ตั้งไว้แล้ว
-
-เปิด Learner Lab และ EC2 เครื่องเดิม แล้ว SSH ไปที่ Public DNS ล่าสุด
-รันคำสั่งนี้หลังจากโค้ดใหม่ขึ้น branch ที่เครื่องใช้ deploy แล้ว
-
-```sh
-cd ~/cs100-power-up
-git branch --show-current
-git pull --ff-only && sudo systemctl restart cs100-power-up
-systemctl is-active cs100-power-up
-git rev-parse --short HEAD
-```
-
-พอขึ้น `active` เปิด `http://PUBLIC_IP:3000/` และ `http://PUBLIC_IP:3000/challenge/`
-จากมือถือ คัด Public IPv4 ล่าสุดจากหน้า Instances เพราะอาจเปลี่ยนหลัง Stop/Start
-
-ถ้าตั้งเครื่องใหม่ ให้ลง Node.js 22 ขึ้นไปกับ Git, clone repo และ checkout branch ที่ใช้เดโม
-ทดสอบด้วย `HOST=0.0.0.0 PORT=3000 node server.js` ตั้ง Security Group ให้เปิด TCP 3000
-สำหรับเว็บเดโมและจำกัด SSH 22 ตาม IP ผู้ดูแล แล้วตั้ง systemd ให้เริ่ม `server.js` ตอนบูต
-ใช้บัญชีทั่วไป เช่น `ubuntu` และใช้โฟลเดอร์ข้อมูลที่บัญชีนั้นเขียนได้
-ถ้ากำหนด `PORTFOLIO_DATA_DIR` ให้ใช้โฟลเดอร์เดิมทุกครั้งเพื่ออ่านข้อมูลชุดเดิม
-
-## ก่อนส่งงาน
-
-- ลองเล่นทั้งสองเกมแล้วเช็กฟอร์ม Host และเปิดลิงก์ Evidence จากอีกเครื่อง
-- เซิร์ฟเวอร์เก็บหลักฐานไว้ในโฟลเดอร์ `challenge-results/` ภายในโฟลเดอร์ข้อมูล
-  ให้เก็บโฟลเดอร์นี้ไว้และใช้ URL เว็บที่ผู้รับเข้าถึงได้
-- ลองแลก Item JSON กับอีกกลุ่มจริง เซฟแล้วเปิดจากอีกเครื่องและหลังรีสตาร์ต
-- ลอง JSON ผิดและนำเข้ารหัส Item ซ้ำ ระบบต้องแจ้งเตือน และลองเปิด
-  `/portfolios.json` โดยตรง ควรได้ 404
-- ลอง Export จากการ์ดเดียว ไฟล์ต้องมีเฉพาะ Portfolio ที่เลือก
-- จดผลจริงพร้อมเลข commit และแนบหลักฐานตาม [คู่มือเก็บหลักฐาน](docs/evidence-guide.md)
