@@ -1,20 +1,56 @@
-# CS100 POWER UP! — Learning Portfolio
+# CS100 POWER UP!
 
-Browser-based prototype for creating and viewing learning portfolios and items.
+เว็บหลักสำหรับเก็บ Portfolio และแลกผลงานกับกลุ่มอื่น เกมบูธ **ตาไว!**
+มีทั้งจับผิดภาพและจำสีโลโก้ เปิดได้ที่ `/challenge/` จากเว็บเดียวกัน
+อ่านวิธีเล่นได้ที่ [คู่มือเกมตาไว!](challenge/README.md)
 
-## Run locally
-1. Clone `https://github.com/Phuvalat-V/cs100-power-up.git`.
-2. Open `index.html` in a browser. An optional local server can be used.
-3. Create a portfolio, then choose it in **Add Portfolio Item**.
-4. Enter all fields and at least one valid `https://` evidence URL.
-5. Press **Add Item**, refresh the page, and confirm the data remains.
-6. Optionally click **Load Sample Portfolios (2 × 2)**.
+## เปิดบนเครื่องตัวเอง
 
-## Storage and limitations
-Data is saved in the browser's `localStorage` under `cs100-portfolios`. It is not synchronized across browsers or devices. Clearing site data removes it. The app does not use a server or database.
+ใช้ Node.js 22 ขึ้นไป เปิด Terminal ในโฟลเดอร์โปรเจกต์แล้วรัน `node server.js`
+จากนั้นเปิด [http://127.0.0.1:3000/](http://127.0.0.1:3000/)
 
-## Team and issues
-See GitHub Issues #1–#6 for ownership, implementation, testing, and commits.
+ข้อมูลที่เซฟจะอยู่ใน `portfolios.json` บนเครื่องที่รัน Server
+เว็บเดโมไม่มีระบบล็อกอิน ใช้ชื่อเล่นและข้อมูลสมมติเท่านั้น
 
-## Testing
-Use `docs/test-results.md`. Add real screenshots/video links for the Checkpoint report. The sample evidence links using `example.com` are placeholders, not real student work.
+## ใช้ที่บูธยังไง
+
+1. ที่หน้าเว็บหลัก กด **Host Challenge → เปิดเกมตาไว!** แล้วกรอกชื่อเล่น
+2. เล่นจับผิดภาพให้จบ แล้วเล่นจำสีโลโก้ต่อ จากนั้นกรอก Reflection ครั้งเดียว
+3. กด **บันทึกผลและส่งไปหน้าหลัก** ชื่อเล่น ผลทั้งสองเกม Reflection และ Evidence
+   จะเข้าฟอร์ม Host อัตโนมัติ ตรวจแล้วกด **Generate Item JSON → Copy JSON**
+4. คนรับเอา Item JSON ไปวางในหน้า **Import Item** ของเว็บกลุ่มตัวเอง เลือก Portfolio
+   ตรวจลิงก์ แก้ Reflection ตามที่ทำจริง แล้วกด **Save Imported Item**
+5. ที่ **My Portfolio** กด Export บนการ์ดของตัวเอง จะได้ `my-portfolio.json` ไว้ส่งอาจารย์
+
+## อัปเดตเว็บบน EC2 ที่ตั้งไว้แล้ว
+
+เปิด Learner Lab และ EC2 เครื่องเดิม แล้ว SSH ไปที่ Public DNS ล่าสุด
+รันคำสั่งนี้หลังจากโค้ดใหม่ขึ้น branch ที่เครื่องใช้ deploy แล้ว
+
+```sh
+cd ~/cs100-power-up
+git branch --show-current
+git pull --ff-only && sudo systemctl restart cs100-power-up
+systemctl is-active cs100-power-up
+git rev-parse --short HEAD
+```
+
+พอขึ้น `active` เปิด `http://PUBLIC_IP:3000/` และ `http://PUBLIC_IP:3000/challenge/`
+จากมือถือ คัด Public IPv4 ล่าสุดจากหน้า Instances เพราะอาจเปลี่ยนหลัง Stop/Start
+
+ถ้าตั้งเครื่องใหม่ ให้ลง Node.js 22 ขึ้นไปกับ Git, clone repo และ checkout branch ที่ใช้เดโม
+ทดสอบด้วย `HOST=0.0.0.0 PORT=3000 node server.js` ตั้ง Security Group ให้เปิด TCP 3000
+สำหรับเว็บเดโมและจำกัด SSH 22 ตาม IP ผู้ดูแล แล้วตั้ง systemd ให้เริ่ม `server.js` ตอนบูต
+ใช้บัญชีทั่วไป เช่น `ubuntu` และใช้โฟลเดอร์ข้อมูลที่บัญชีนั้นเขียนได้
+ถ้ากำหนด `PORTFOLIO_DATA_DIR` ให้ใช้โฟลเดอร์เดิมทุกครั้งเพื่ออ่านข้อมูลชุดเดิม
+
+## ก่อนส่งงาน
+
+- ลองเล่นทั้งสองเกมแล้วเช็กฟอร์ม Host และเปิดลิงก์ Evidence จากอีกเครื่อง
+- เซิร์ฟเวอร์เก็บหลักฐานไว้ในโฟลเดอร์ `challenge-results/` ภายในโฟลเดอร์ข้อมูล
+  ให้เก็บโฟลเดอร์นี้ไว้และใช้ URL เว็บที่ผู้รับเข้าถึงได้
+- ลองแลก Item JSON กับอีกกลุ่มจริง เซฟแล้วเปิดจากอีกเครื่องและหลังรีสตาร์ต
+- ลอง JSON ผิดและนำเข้ารหัส Item ซ้ำ ระบบต้องแจ้งเตือน และลองเปิด
+  `/portfolios.json` โดยตรง ควรได้ 404
+- ลอง Export จากการ์ดเดียว ไฟล์ต้องมีเฉพาะ Portfolio ที่เลือก
+- จดผลจริงพร้อมเลข commit และแนบหลักฐานตาม [คู่มือเก็บหลักฐาน](docs/evidence-guide.md)

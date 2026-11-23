@@ -1,7 +1,10 @@
 
-function validatePortfolioItem(data) {
+function validatePortfolioItem(data, { draftReflection = false } = {}) {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return "Expected a Portfolio Item object.";
+
   // 1. Validate required fields
   const required = [
+    "id",
     "title",
     "type",
     "date",
@@ -19,7 +22,7 @@ function validatePortfolioItem(data) {
   }
 
   // 2. Validate date (YYYY-MM-DD)
-  const date = data.date.trim();
+  const date = data.date;
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
 
   if (!match) {
@@ -64,7 +67,7 @@ function validatePortfolioItem(data) {
     if (
       !data.reflection ||
       typeof data.reflection[field] !== "string" ||
-      !data.reflection[field].trim()
+      (!draftReflection && !data.reflection[field].trim())
     ) {
       return `Please complete reflection: ${field}.`;
     }
@@ -79,12 +82,12 @@ function validatePortfolioItem(data) {
   }
 
   for (const link of data.evidence) {
+    if (typeof link !== "string") return "Evidence must contain URL strings.";
     try {
       const url = new URL(link);
 
       if (
-        !["https:", "http:"].includes(url.protocol) ||
-        !url.hostname.includes(".")
+        !["https:", "http:"].includes(url.protocol)
       ) {
         return `Invalid evidence URL: ${link}`;
       }
@@ -96,3 +99,5 @@ function validatePortfolioItem(data) {
   // All validations passed
   return null;
 }
+
+if (typeof module !== "undefined") module.exports = validatePortfolioItem;
