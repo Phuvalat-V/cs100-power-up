@@ -23,31 +23,12 @@
   <main class="container py-4">
 
     <nav class="demo-nav mb-4" aria-label="Final Demo">
-      <a class="btn btn-outline-primary" href="#import-item">Import Item</a>
       <a class="btn btn-outline-primary" href="#saved-portfolios">My Portfolio</a>
       <a class="btn btn-outline-primary" href="#create-portfolio">Create Portfolio</a>
       <a class="btn btn-outline-primary" href="#challenge-booth">Host Challenge</a>
+      <a class="btn btn-outline-primary" href="#import-item">Import Item</a>
     </nav>
 
-    <section class="card mb-4" id="import-item">
-      <div class="card-body">
-        <h2 class="h4">Import Portfolio Item</h2>
-        <label class="form-label" for="import-json">Paste the Item JSON from another booth</label>
-        <textarea id="import-json" class="form-control font-monospace" rows="5"></textarea>
-        <button id="preview-item" type="button" class="btn btn-primary my-2">Import and Review</button>
-        <form id="import-form" hidden>
-          <h3 id="import-title" class="h5"></h3>
-          <p id="import-description"></p>
-          <div id="import-evidence" class="mb-2"></div>
-          <label for="import-portfolio" class="form-label">Destination Portfolio</label>
-          <p class="small mb-2">Need a destination? <a href="#create-portfolio">Create a portfolio</a>, then return to this form.</p>
-          <select id="import-portfolio" class="form-select mb-3" required></select>
-          <div id="import-reflection"></div>
-          <button class="btn btn-success">Save Imported Item</button>
-        </form>
-        <div id="import-status" class="mt-2" role="status"></div>
-      </div>
-    </section>
 
     <!-- Saved portfolios -->
     <section class="mb-4" id="saved-portfolios">
@@ -181,7 +162,7 @@
     <section class="card mb-4" id="challenge-booth" lang="th">
       <div class="card-body">
         <h2 class="h4">ตาไว! — สร้าง Item JSON</h2>
-        <p>ให้ผู้เล่นเลือกเกม แล้วใช้ผลจากหน้าสรุปมากรอกในฟอร์ม</p>
+        <p>เล่นให้ครบสองเกมแล้วส่งผลกลับมา ระบบจะเติมฟอร์มและแนบลิงก์หลักฐานให้</p>
 
         <a class="btn btn-outline-primary mb-3"
            href="/challenge/">
@@ -192,6 +173,7 @@
           <label for="host-title">เกมที่เล่น</label>
           <select class="form-select" id="host-title" name="title" required>
             <option value="">เลือกเกม</option>
+            <option value="ตาไว! — เล่นครบสองเกม">จับผิดภาพ + จำสีโลโก้</option>
             <option value="ตาไว! — จับผิดภาพ">จับผิดภาพ</option>
             <option value="ตาไว! — จำสีโลโก้">จำสีโลโก้</option>
           </select>
@@ -208,9 +190,10 @@
           <input class="form-control" id="host-skills" name="skills"
                  value="การสังเกต, สมาธิ" required>
 
-          <label for="host-evidence">ลิงก์รูปหรือคลิปหน้าสรุปผล</label>
+          <label for="host-evidence">ลิงก์หลักฐานผลการเล่น</label>
           <input class="form-control" type="url" id="host-evidence"
                  name="evidence" required>
+          <a id="host-evidence-preview" hidden target="_blank" rel="noopener">เปิดดูหลักฐานผลการเล่น</a>
 
           <label for="host-learned">สิ่งที่ผู้เข้าร่วมได้เรียนรู้</label>
           <textarea class="form-control" id="host-learned" name="learned" required></textarea>
@@ -233,6 +216,27 @@
         <div id="host-status" class="mt-2" role="status"></div>
       </div>
     </section>
+
+<section class="card mb-4" id="import-item">
+      <div class="card-body">
+        <h2 class="h4">Import Portfolio Item</h2>
+        <label class="form-label" for="import-json">Paste the Item JSON from another booth</label>
+        <textarea id="import-json" class="form-control font-monospace" rows="5"></textarea>
+        <button id="preview-item" type="button" class="btn btn-primary my-2">Import and Review</button>
+        <form id="import-form" hidden>
+          <h3 id="import-title" class="h5"></h3>
+          <p id="import-description"></p>
+          <div id="import-evidence" class="mb-2"></div>
+          <label for="import-portfolio" class="form-label">Destination Portfolio</label>
+          <p class="small mb-2">Need a destination? <a href="#create-portfolio">Create a portfolio</a>, then return to this form.</p>
+          <select id="import-portfolio" class="form-select mb-3" required></select>
+          <div id="import-reflection"></div>
+          <button class="btn btn-success">Save Imported Item</button>
+        </form>
+        <div id="import-status" class="mt-2" role="status"></div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="bg-light text-center py-3">

@@ -6,6 +6,7 @@ const validateItem = require('./js/validation');
 
 const dataDir = path.resolve(process.env.PORTFOLIO_DATA_DIR || __dirname);
 const dataFile = path.join(dataDir, 'portfolios.json');
+const resultsDir = path.join(dataDir, 'challenge-results');
 fs.mkdirSync(dataDir, { recursive: true, mode: 0o700 });
 
 const assets = {
@@ -92,6 +93,75 @@ function json(res, status, value) {
   res.end(JSON.stringify(value));
 }
 
+function saveChallengeResult(incoming) {
+  const alias = typeof incoming?.alias === 'string' ? incoming.alias.trim() : '';
+  if (!alias || alias.length > 60) throw new RequestError(400, 'Expected a player nickname.');
+  // Three five-point scenes and eight logo questions in the booth challenge.
+  const limits = { found: [15, 15], correct: [0, 8], spotSeconds: [0, 86400], colorSeconds: [0, 86400] };
+  const result = { alias };
+  for (const [field, [min, max]] of Object.entries(limits)) {
+    const value = incoming[field];
+    if (!Number.isInteger(value) || value < min || value > max) {
+      throw new RequestError(400, 'Invalid ' + field + '.');
+    }
+    result[field] = value;
+  }
+  const id = randomUUID();
+  fs.mkdirSync(resultsDir, { recursive: true, mode: 0o700 });
+  const temp = path.join(resultsDir, '.' + id + '.tmp');
+  try {
+    fs.writeFileSync(temp, JSON.stringify(result), { mode: 0o600, flag: 'wx' });
+    fs.renameSync(temp, path.join(resultsDir, id + '.json'));
+  } finally {
+    fs.rmSync(temp, { force: true });
+  }
+  return id;
+}
+
+function renderChallengeResult(res, id) {
+  let result;
+  try {
+    result = JSON.parse(fs.readFileSync(path.join(resultsDir, id + '.json'), 'utf8'));
+  } catch (error) {
+    if (error.code === 'ENOENT') throw new RequestError(404, 'ไม่พบผลการเล่น');
+    throw error;
+  }
+  const escaped = { '&': '&amp;', '<': '&lt;', '>': '&gt;' };
+  const alias = result.alias.replace(/[&<>]/g, char => escaped[char]);
+  const time = seconds => [Math.floor(seconds / 60), seconds % 60]
+    .map(part => String(part).padStart(2, '0')).join(':');
+
+  res.writeHead(200, {
+    'Content-Type': 'text/html; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'X-Robots-Tag': 'noindex',
+  });
+  res.end(`<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ผลการเล่นตาไว! | CS100</title>
+  <link rel="stylesheet" href="/challenge/style.css">
+</head>
+<body>
+  <main class="evidence-page">
+    <section class="game-board evidence-card">
+      <h1>ผลการเล่นตาไว!</h1>
+      <p>ผู้เล่น <strong>${alias}</strong></p>
+      <dl>
+        <dt>จับผิดภาพ</dt>
+        <dd>เจอ ${result.found} / 15 จุด · เวลา ${time(result.spotSeconds)}</dd>
+        <dt>จำสีโลโก้</dt>
+        <dd>ตอบถูก ${result.correct} / 8 ข้อ · เวลา ${time(result.colorSeconds)}</dd>
+      </dl>
+      <a class="button" href="/challenge/">ไปหน้าเกมตาไว!</a>
+    </section>
+  </main>
+</body>
+</html>`);
+}
+
 http.createServer(async (req, res) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   const pathname = req.url.split('?')[0];
@@ -108,6 +178,14 @@ http.createServer(async (req, res) => {
       const content = fs.readFileSync(path.join(__dirname, file));
       res.writeHead(200, { 'Content-Type': type.startsWith('text/') ? type + '; charset=utf-8' : type });
       return res.end(content);
+    }
+
+    if (pathname === '/api/challenge-results' && req.method === 'POST') {
+      return json(res, 201, { id: saveChallengeResult(await readJSON(req)) });
+    }
+    const challengeResult = /^\/challenge\/results\/([a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12})$/.exec(pathname);
+    if (challengeResult && req.method === 'GET') {
+      return renderChallengeResult(res, challengeResult[1]);
     }
 
     if (pathname === '/api/portfolios' && req.method === 'GET') {

@@ -8,7 +8,6 @@ const backgroundCanvases = canvases.map(() => {
   canvas.height = pictureHeight;
   return canvas;
 });
-const buttons = { spot: $("tab-spot"), color: $("tab-color") };
 const colorNames = {
   yellow: "สีเหลือง", red: "สีแดง", green: "สีเขียว", blue: "สีน้ำเงิน",
   orange: "สีส้ม", pink: "สีชมพู", purple: "สีม่วง", black: "สีดำ",
@@ -35,7 +34,7 @@ function shuffle(values) {
 }
 
 function freshGame(mode) {
-  const game = { reflection: {}, round: 0, elapsed: 0, startedAt: null, done: false, feedback: "", tone: "" };
+  const game = { round: 0, elapsed: 0, startedAt: null, done: false, feedback: "", tone: "" };
   if (mode === "spot") {
     game.rounds = scenes.map(() => ({ found: [], misses: 0, hints: [], cursor: null, miss: null }));
   } else {
@@ -226,7 +225,7 @@ function updateNext() {
   const game = activeGame();
   $("next-round").hidden = game.done || !roundComplete(game);
   const last = game.round === (mode === "spot" ? scenes.length : colorQuestionsCount) - 1;
-  $("next-round").textContent = last ? "ดูผลการเล่น" : mode === "spot" ? "ด่านถัดไป" : "ข้อถัดไป";
+  $("next-round").textContent = last ? (mode === "spot" ? "ไปเกมจำสีโลโก้" : "ดูผลทั้งสองเกม") : mode === "spot" ? "ด่านถัดไป" : "ข้อถัดไป";
 }
 
 function gameName(kind) {
@@ -245,8 +244,7 @@ function renderGame() {
   const game = activeGame();
   const isSpot = mode === "spot";
   $("board").dataset.game = mode;
-  for (const [kind, button] of Object.entries(buttons)) button.setAttribute("aria-pressed", String(kind === mode));
-  $("game-chip").textContent = gameName(mode);
+  $("game-chip").textContent = game.done ? "เล่นครบสองเกม" : (isSpot ? "เกม 1 / 2 · " : "เกม 2 / 2 · ") + gameName(mode);
   $("spot-play").hidden = !isSpot || game.done;
   $("color-play").hidden = isSpot || game.done;
   $("play-footer").hidden = game.done;
@@ -260,12 +258,7 @@ function renderGame() {
     ? scenes[game.round].name
     : game.questions[game.round].brand;
   if (game.done) {
-    $("result-summary").textContent = summary(mode, game);
-    for (const field of reflectionFields) {
-      field.value = game.reflection[field.name] ?? "";
-      field.setCustomValidity("");
-    }
-    $("transfer-status").textContent = "";
+    $("result-summary").textContent = combinedSummary();
   } else if (isSpot) {
     paintSpot();
   } else {
@@ -277,14 +270,9 @@ function renderGame() {
   updateTimer();
 }
 
-function chooseMode(kind) {
-  if (mode === kind) return;
-  const previousGame = activeGame();
-  pauseTimer(previousGame);
-  if (mode === "spot") roundSpot().cursor = null;
-  mode = kind;
-  if (!roundComplete(activeGame())) startTimer(activeGame());
-  renderGame();
+function combinedSummary() {
+  return "จับผิดภาพ: " + summary("spot", games.spot) +
+    " | จำสีโลโก้: " + summary("color", games.color);
 }
 
 function answerSpot(x, y, index) {
@@ -361,6 +349,13 @@ function nextRound() {
   if (game.round + 1 === rounds) {
     game.done = true;
     pauseTimer(game);
+    if (mode === "spot") {
+      mode = "color";
+      renderGame();
+      startTimer(activeGame());
+      $("game-title").focus();
+      return;
+    }
   } else {
     game.round++;
     game.feedback = "";
@@ -376,10 +371,9 @@ function restart() {
   games[mode] = freshGame(mode);
   startTimer(activeGame());
   renderGame();
-  buttons[mode].focus({ preventScroll: true });
+  $("game-title").focus({ preventScroll: true });
 }
 
-for (const [kind, button] of Object.entries(buttons)) button.addEventListener("click", () => chooseMode(kind));
 canvases.forEach((canvas, index) => {
   canvas.addEventListener("click", (event) => {
     const rect = canvas.getBoundingClientRect();
@@ -413,7 +407,7 @@ canvases.forEach((canvas, index) => {
 $("next-round").addEventListener("click", nextRound);
 $("hint").addEventListener("click", hint);
 $("restart").addEventListener("click", restart);
-$("play-again").addEventListener("click", restart);
+$("play-again").addEventListener("click", beginChallenge);
 
 const playerDialog = $("player-dialog");
 const playerName = $("player-name");
@@ -443,33 +437,60 @@ $("player-form").addEventListener("submit", (event) => {
   if (!playerName.reportValidity()) return;
   player = playerName.value.trim();
   $("current-player").textContent = player;
-  games = { spot: freshGame("spot"), color: freshGame("color") };
   playerDialog.close();
+  beginChallenge();
+});
+let savingResult = false;
+
+function beginChallenge() {
+  mode = "spot";
+  games = { spot: freshGame("spot"), color: freshGame("color") };
+  reflectionForm.reset();
+  for (const field of reflectionFields) field.setCustomValidity("");
+  $("transfer-status").textContent = "";
   startTimer(activeGame());
   renderGame();
-  buttons[mode].focus({ preventScroll: true });
-});
-for (const field of reflectionFields) {
-  field.addEventListener("input", () => {
-    activeGame().reflection[field.name] = field.value;
-    requireText(field);
-  });
+  $("game-title").focus({ preventScroll: true });
 }
 
-reflectionForm.addEventListener("submit", (event) => {
+for (const field of reflectionFields) {
+  field.addEventListener("input", () => requireText(field));
+}
+
+reflectionForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (savingResult || !games.spot.done || !games.color.done) return;
   for (const field of reflectionFields) requireText(field);
   if (!reflectionForm.reportValidity()) return;
-  const game = activeGame();
   const reflection = Object.fromEntries(reflectionFields.map((field) => [field.name, field.value.trim()]));
+  const controls = [...reflectionForm.elements, $("change-player")];
+  savingResult = true;
+  for (const control of controls) control.disabled = true;
+  $("transfer-status").textContent = "กำลังบันทึกผล…";
   try {
-    sessionStorage.setItem("cs100-game-reflection", JSON.stringify({ game: mode, alias: player, ...reflection }));
+    const response = await fetch("/api/challenge-results", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        alias: player,
+        found: games.spot.rounds.reduce((total, round) => total + round.found.length, 0),
+        spotSeconds: Math.floor(elapsed(games.spot) / 1000),
+        correct: correctColors(games.color),
+        colorSeconds: Math.floor(elapsed(games.color) / 1000),
+      }),
+    });
+    if (!response.ok) throw new Error("Result could not be saved");
+    const { id } = await response.json();
+    sessionStorage.setItem("cs100-challenge-" + id, JSON.stringify({
+      alias: player, result: combinedSummary(), ...reflection,
+    }));
+    window.location.assign("/?challengeResult=" + encodeURIComponent(id) + "#challenge-booth");
   } catch {
-    $("transfer-status").textContent = "ส่งผลไม่ได้ ลองเปิดเว็บในแท็บปกติแล้วกดส่งอีกครั้ง";
-    return;
+    $("transfer-status").textContent = "ส่งผลไม่ได้ ลองกดส่งอีกครั้ง คำตอบยังอยู่ครบ";
+  } finally {
+    savingResult = false;
+    for (const control of controls) control.disabled = false;
   }
-  const params = new URLSearchParams({ game: mode, result: summary(mode, game) });
-  window.location.assign("/?" + params.toString() + "#challenge-booth");
 });
 
 renderGame();

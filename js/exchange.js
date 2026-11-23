@@ -26,6 +26,27 @@ if (gameTitle) {
   }
 }
 
+const challengeId = gameResult.get('challengeResult');
+if (challengeId && /^[a-f0-9-]{36}$/.test(challengeId)) {
+  const evidenceURL = new URL('/challenge/results/' + challengeId, window.location.origin).href;
+  const preview = document.getElementById('host-evidence-preview');
+  hostForm.elements.title.value = 'ตาไว! — เล่นครบสองเกม';
+  hostForm.elements.evidence.value = evidenceURL;
+  preview.href = evidenceURL;
+  preview.hidden = false;
+  hostForm.elements.evidence.addEventListener('input', () => {
+    preview.hidden = hostForm.elements.evidence.value !== evidenceURL;
+  });
+  try {
+    const completed = JSON.parse(sessionStorage.getItem('cs100-challenge-' + challengeId));
+    for (const field of ['alias', 'result', 'learned', 'challenge', 'next']) {
+      if (typeof completed?.[field] === 'string') hostForm.elements[field].value = completed[field];
+    }
+  } catch {
+    // The evidence link remains available if session storage cannot be read.
+  }
+}
+
 hostForm.addEventListener('input', () => {
   hostOutput.hidden = true;
   hostStatus.textContent = '';

@@ -44,19 +44,6 @@
       <div class="hero-doodle hero-doodle-right" aria-hidden="true"><span></span><i></i><b></b></div>
     </section>
 
-    <div class="game-picker" role="group" aria-label="เลือกเกม">
-      <button class="game-tab spot-tab" id="tab-spot" type="button" aria-pressed="true">
-        <span class="tab-icon"><svg class="icon"><use href="#i-search"/></svg></span>
-        <span class="tab-copy"><strong>จับผิดภาพ</strong><small>หา 5 จุดที่ต่างกันในแต่ละด่าน</small></span>
-        <span class="tab-indicator" aria-hidden="true"></span>
-      </button>
-      <button class="game-tab color-tab" id="tab-color" type="button" aria-pressed="false">
-        <span class="tab-icon"><svg class="icon"><use href="#i-palette"/></svg></span>
-        <span class="tab-copy"><strong>จำสีโลโก้</strong><small>ทายสีจริงจากโลโก้ขาวดำ</small></span>
-        <span class="tab-indicator" aria-hidden="true"></span>
-      </button>
-    </div>
-
     <p class="player-line">ผู้เล่น <strong id="current-player"></strong>
       <button class="button" id="change-player" type="button">เปลี่ยนผู้เล่น</button>
     </p>
@@ -65,6 +52,7 @@
         <h2 id="player-heading">ใครจะเล่นรอบนี้?</h2>
         <label for="player-name">ชื่อเล่น</label>
         <input id="player-name" name="alias" maxlength="60" required autofocus>
+        <p>เล่นจับผิดภาพก่อน แล้วต่อด้วยจำสีโลโก้ ชื่อเล่นและคะแนนจะปรากฏบนลิงก์หลักฐาน</p>
         <div class="result-actions">
           <button class="button primary" type="submit">เริ่มเล่น</button>
           <a class="button" href="/#challenge-booth">กลับหน้าหลัก</a>
@@ -77,7 +65,7 @@
         <div class="play-head">
           <div>
             <p class="round" id="round"></p>
-            <h2 id="game-title"></h2>
+            <h2 id="game-title" tabindex="-1"></h2>
           </div>
           <span class="game-chip" id="game-chip"></span>
         </div>
@@ -121,9 +109,10 @@
             <textarea id="game-challenge" name="challenge" rows="2" maxlength="500" required></textarea>
             <label for="game-next">สิ่งที่อยากทำต่อ</label>
             <textarea id="game-next" name="next" rows="2" maxlength="500" required></textarea>
+            <p class="instruction">คำตอบส่วนนี้จะส่งไปที่ฟอร์ม Host</p>
             <p id="transfer-status" role="status"></p>
             <div class="result-actions">
-              <button class="button primary" type="submit">ส่งผลไปหน้าหลัก</button>
+              <button class="button primary" id="send-result" type="submit">บันทึกผลและส่งไปหน้าหลัก</button>
               <button type="button" class="button" id="play-again">เล่นอีกครั้ง</button>
             </div>
           </form>
@@ -149,7 +138,7 @@
         </div>
       </aside>
     </section>
-    <footer class="footer"><span>ตาไว! · CS100 Final Demo</span><span>ถ่ายรูปหน้าสรุปไว้เป็นหลักฐาน แล้วนำผลไปกรอกในเว็บหลัก</span></footer>
+    <footer class="footer"><span>ตาไว! · CS100 Final Demo</span><span>เล่นครบสองเกมเพื่อรับลิงก์หลักฐาน</span></footer>
   </main>
 
 </body>

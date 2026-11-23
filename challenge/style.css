@@ -488,3 +488,17 @@ p, h1, h2, h3, figure { margin: 0; }
 
 #reflection-form textarea { resize: vertical; }
 #transfer-status:empty { display: none; }
+
+.evidence-page {
+  width: min(100% - 32px, 560px);
+  margin: 40px auto;
+}
+
+.evidence-page .evidence-card {
+  display: block;
+  padding: clamp(20px, 5vw, 40px);
+  overflow-wrap: anywhere;
+}
+
+.evidence-card dt { font-weight: 700; }
+.evidence-card dd { margin: 0 0 12px; }
